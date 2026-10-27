@@ -127,31 +127,52 @@ em, .italic { font-style: italic; }
 /* ---------- Placeholder media ---------- */
 .media-soft { border-radius: var(--photo-radius); box-shadow: var(--photo-glow); overflow: hidden; }
 .ph {
+  --ph-line: oklch(49% .03 60 / .16);
   position: relative;
-  display: flex; align-items: flex-end;
+  display: flex; align-items: center; justify-content: center;
   width: 100%; height: 100%;
+  overflow: hidden;
+  color: var(--taupe);
   background:
+    /* "X" de wireframe */
+    linear-gradient(to top right, transparent calc(50% - .5px), var(--ph-line) 50%, transparent calc(50% + .5px)),
+    linear-gradient(to bottom right, transparent calc(50% - .5px), var(--ph-line) 50%, transparent calc(50% + .5px)),
     radial-gradient(120% 80% at 20% 15%, oklch(97% .012 75) 0%, transparent 55%),
     radial-gradient(90% 70% at 85% 90%, oklch(86% .03 55 / .9) 0%, transparent 60%),
     linear-gradient(160deg, var(--muted) 0%, var(--blush) 100%);
-  color: var(--taupe);
 }
-.ph::before { /* fine grain */
-  content: ""; position: absolute; inset: 0; opacity: .35; mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .45 0 0 0 0 .4 0 0 0 .18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+.ph::before { /* medida sugerida no canto */
+  content: attr(data-size);
+  position: absolute; left: .9rem; bottom: .8rem;
+  font-size: .58rem; letter-spacing: .2em; text-transform: uppercase;
+  opacity: .75;
 }
-.ph::after { /* label */
+.ph::after { /* marca d'água central */
   content: attr(data-label);
   position: relative;
-  margin: 1.1rem;
-  font-size: .625rem; letter-spacing: .24em; text-transform: uppercase;
+  max-width: 78%;
+  padding: .85rem 1.1rem;
+  border: 1px dashed currentColor;
+  background: color-mix(in oklab, var(--ivory) 72%, transparent);
+  font-size: clamp(.6rem, .55rem + .35vw, .78rem);
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  text-align: center;
 }
 .ph.dark {
+  --ph-line: oklch(85% .02 70 / .14);
   background:
+    linear-gradient(to top right, transparent calc(50% - .5px), var(--ph-line) 50%, transparent calc(50% + .5px)),
+    linear-gradient(to bottom right, transparent calc(50% - .5px), var(--ph-line) 50%, transparent calc(50% + .5px)),
     radial-gradient(100% 70% at 25% 20%, oklch(40% .02 60) 0%, transparent 60%),
     linear-gradient(160deg, oklch(28% .01 60), var(--ink));
-  color: oklch(80% .02 70 / .6);
+  color: oklch(85% .03 75 / .8);
 }
+.ph.dark::after { background: oklch(20.5% .004 75 / .55); }
+/* quando houver <img> dentro, esconde a marca d'água */
+.ph:has(img)::before, .ph:has(img)::after { display: none; }
 .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .ratio-45 { aspect-ratio: 4 / 5; }
 .ratio-34 { aspect-ratio: 3 / 4; }
@@ -550,3 +571,72 @@ em, .italic { font-style: italic; }
   .reveal { opacity: 1; transform: none; }
 }
 .no-js .reveal { opacity: 1; transform: none; }
+
+/* ==========================================================================
+   Ajustes mobile
+   ========================================================================== */
+.grid-12 > * { min-width: 0; }
+.info-row dd { overflow-wrap: anywhere; }
+.menu-toggle { padding: .75rem 0 .75rem .75rem; margin-right: -.25rem; }
+.menu-open ~ .float-cta, body.modal-open .float-cta { opacity: 0; pointer-events: none; }
+.float-cta { transition: transform .3s, background .3s, opacity .3s; }
+.modal-box:focus { outline: none; }
+
+@media (max-width: 639px) {
+  .section { padding-block: 4.5rem; }
+  .section-head { margin-bottom: 2rem; }
+
+  /* CTAs empilhados em largura total */
+  .hero-ctas, .book-ctas { flex-direction: column; align-items: stretch; }
+  .hero-ctas > a, .book-ctas > a { width: 100%; }
+
+  /* abas do filtro em uma linha só, com rolagem */
+  .tabs {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+    margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter);
+    margin-bottom: 1.75rem;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex-shrink: 0; }
+
+  /* tratamentos e equipe viram carrossel horizontal */
+  .treatments, .team, .gallery {
+    display: grid; grid-auto-flow: column; grid-auto-columns: 80%;
+    grid-template-columns: none;
+    gap: 1rem;
+    overflow-x: auto; scroll-snap-type: x mandatory;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: .5rem var(--gutter) 1.25rem;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .treatments::-webkit-scrollbar, .team::-webkit-scrollbar, .gallery::-webkit-scrollbar { display: none; }
+  .treatments > *, .team > *, .gallery > * { scroll-snap-align: start; }
+  .t-card h3, .member h3 { font-size: 1.5rem; }
+
+  .swipe-hint { display: flex; }
+
+  .hero-badge { display: none; }
+  .info-row { grid-template-columns: 5.5rem 1fr; }
+  .faq-q { font-size: 1.25rem; padding-block: 1.25rem; }
+  .step { padding-block: 1.75rem; }
+  .step .num { font-size: 2.75rem; }
+  .quote-nav { margin-top: 2rem; }
+
+  /* rodapé em 2 colunas */
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 2.5rem 1.5rem; padding-block: 4rem; }
+  .f-brand, .f-col-2 { grid-column: 1 / -1; }
+  .footer-bottom { flex-direction: column; gap: .5rem; }
+}
+
+/* dica "arraste" para carrosséis no mobile */
+.swipe-hint {
+  display: none; align-items: center; gap: .6rem;
+  margin-top: .25rem;
+  font-size: .62rem; letter-spacing: .24em; text-transform: uppercase; color: var(--taupe);
+}
+.swipe-hint::after { content: ""; width: 2.5rem; height: 1px; background: currentColor; }
+@media (max-width: 639px) {
+  .swipe-hint { display: flex; }
+  .f-col-2 { order: 1; }
+}

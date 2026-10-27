@@ -87,6 +87,7 @@
       c.hidden = !show;
       if (show) { c.classList.remove('is-visible'); requestAnimationFrame(() => c.classList.add('is-visible')); }
     });
+    const grid = $('.treatments'); if (grid) grid.scrollTo({ left: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   }));
 
   /* ---------- FAQ (acordeão) ---------- */
@@ -129,11 +130,13 @@
       lastFocus = document.activeElement;
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
-      const f = focusables(); if (f[0]) f[0].focus();
+      document.body.classList.add('modal-open');
+      $('.modal-box', modal).focus();
     };
     const close = () => {
       modal.classList.remove('open');
       document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
       store.set(KEY, '1');
       if (lastFocus) lastFocus.focus();
     };
